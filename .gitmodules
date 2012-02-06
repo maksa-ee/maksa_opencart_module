@@ -1,0 +1,3 @@
+[submodule "system/ulink"]
+	path = system/ulink
+	url = git://github.com/ribozz/ulink-php.git
