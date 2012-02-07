@@ -51,6 +51,7 @@ class ModelPaymentMaksaEE extends Model
 
         if ($status) {
             $method_data = array(
+                'id'       => 'maksa_ee',
                 'code'       => 'maksa_ee',
                 'title'      => $this->language->get('text_title'),
                 'sort_order' => $this->config->get('maksa_ee_sort_order'),

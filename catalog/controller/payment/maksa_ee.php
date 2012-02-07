@@ -39,8 +39,8 @@ class ControllerPaymentMaksaEE extends Controller
                 $this->config->get('maksa_ee_public_key'),
                 $this->config->get('maksa_ee_private_key'),
                 'EUR',
-                $this->url->link('checkout/success'),
-                $this->url->link('payment/maksa_ee/callback')
+                is_callable($this->url, 'link') ? $this->url->link('checkout/success') : $this->url->https('checkout/success'),
+                is_callable($this->url, 'link') ? $this->url->link('payment/maksa_ee/callback') : $this->url->https('payment/maksa_ee/callback')
             );
         }
 
@@ -69,8 +69,10 @@ class ControllerPaymentMaksaEE extends Controller
                 'EUR',
             );
 
-            if (in_array($order_info['currency_code'], $currencies)) {
-                $currency = $order_info['currency_code'];
+            $currency_code = isset($order_info['currency_code']) ? $order_info['currency_code'] : $order_info['currency'];
+
+            if (in_array($currency_code, $currencies)) {
+                $currency = $currency_code;
             }
             else {
                 $currency = 'EUR';
@@ -108,6 +110,8 @@ class ControllerPaymentMaksaEE extends Controller
                 )
             );
             $this->data['signedRequest'] = $signedRequest;
+
+            $this->id = 'payment';
 
             if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/maksa_ee.tpl')) {
                 $this->template = $this->config->get('config_template') . '/template/payment/maksa_ee.tpl';
