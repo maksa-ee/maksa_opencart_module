@@ -39,7 +39,7 @@ class ControllerPaymentMaksaEE extends Controller
                 $this->config->get('maksa_ee_public_key'),
                 $this->config->get('maksa_ee_private_key'),
                 'EUR',
-                $this->url->link('checkout/success'),
+                $this->url->link('payment/maksa_ee/confirmation&order_id=' . $this->session->data['order_id']),
                 $this->url->link('payment/maksa_ee/callback')
             );
         }
@@ -118,6 +118,67 @@ class ControllerPaymentMaksaEE extends Controller
 
             $this->render();
         }
+    }
+
+    public function wait()
+    {
+        $order_id = 0;
+        if (isset($this->request->get['order_id'])) {
+            $order_id = $this->request->get['order_id'];
+        }
+
+        $this->load->model('account/order');
+        $order_info = $this->model_account_order->getOrder($order_id);
+
+        $response = 'waiting';
+        if ($order_info) {
+            if ($order_info['order_status_id']) {
+                if ($this->config->get('maksa_ee_completed_status_id') == $order_info['order_status_id']) {
+                    $response = 'ok';
+                }
+                else if ($this->config->get('maksa_ee_failed_status_id') == $order_info['order_status_id']) {
+                    $response = 'not_ok';
+                }
+            }
+        }
+
+        echo $response;
+    }
+
+    public function confirmation()
+    {
+        $order_id = 0;
+        if (isset($this->request->get['order_id'])) {
+            $order_id = $this->request->get['order_id'];
+        }
+
+        $this->language->load('payment/maksa_ee');
+
+        $this->data['text_please_wait']     = $this->language->get('text_please_wait');
+        $this->data['text_payment_success'] = $this->language->get('text_payment_success');
+        $this->data['text_payment_failure'] = $this->language->get('text_payment_failure');
+        $this->data['text_go_to_order']     = $this->language->get('text_go_to_order');
+
+        $this->data['wait_link']    = $this->url->link('payment/maksa_ee/wait&order_id=' . $order_id);
+        $this->data['order_link']   = $this->url->link('account/order/info&order_id=' . $order_id);
+        $this->data['success_link'] = $this->url->link('checkout/success');
+
+        if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl')) {
+            $this->template = $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl';
+        }
+        else {
+            $this->template = 'default/template/payment/maksa_ee_confirmation.tpl';
+        }
+        $this->children = array(
+            'common/column_left',
+            'common/column_right',
+            'common/content_top',
+            'common/content_bottom',
+            'common/footer',
+            'common/header'
+        );
+
+        $this->response->setOutput($this->render());
     }
     
     public function callback()
