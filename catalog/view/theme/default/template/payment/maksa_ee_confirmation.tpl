@@ -4,7 +4,7 @@
     <h1><img src="admin/view/image/payment/maksa_ee.png" /> Maksa.ee</h1>
     <br />
     <p id="maksa-loading-status">
-        <img src="catalog/view/theme/default/image/loading.gif" />
+        <img src="catalog/view/theme/default/image/maksa_ee_loading.gif" />
         <?php echo $text_please_wait; ?>
     </p>
     <script type="text/javascript">
@@ -47,7 +47,7 @@
             <table align="center">
                 <tr>
                     <td>
-                        <img src="catalog/view/theme/default/image/success.png" alt="<?php echo $text_payment_success; ?>"/>
+                        <img src="catalog/view/theme/default/image/maksa_ee_success.png" alt="<?php echo $text_payment_success; ?>"/>
                     </td>
                     <td>
                         <span style="color: green; font-size: 26px;"> <?php echo $text_payment_success; ?> </span>
@@ -60,7 +60,7 @@
             <table align="center">
                 <tr>
                     <td>
-                        <img src="catalog/view/theme/default/image/warning.png" alt="<?php echo $text_payment_failure; ?>"/>
+                        <img src="catalog/view/theme/default/image/maksa_ee_failure.png" alt="<?php echo $text_payment_failure; ?>"/>
                     </td>
                     <td>
                         <span style="color: red; font-size: 26px;"> <?php echo $text_payment_failure; ?> </span>

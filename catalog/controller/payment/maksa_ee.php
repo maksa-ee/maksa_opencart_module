@@ -34,15 +34,21 @@ class ControllerPaymentMaksaEE extends Controller
     {
         if (null == $this->ulinkService) {
             include_once(DIR_SYSTEM . 'maksa_ee/UlinkService.php');
+
+            if (is_callable(array($this->url, 'link'))) {
+                $callbackUrl = $this->url->link('payment/maksa_ee/callback');
+                $confirmUrl = $this->url->link('payment/maksa_ee/confirmation&order_id=' . $this->session->data['order_id']);
+            } else {
+                $callbackUrl = $this->url->https('payment/maksa_ee/callback');
+                $confirmUrl = $this->url->https('payment/maksa_ee/confirmation') . '&order_id=' . $this->session->data['order_id'];
+            }
             $this->ulinkService = new UlinkService(
                 $this->config->get('maksa_ee_client_id'),
                 $this->config->get('maksa_ee_public_key'),
                 $this->config->get('maksa_ee_private_key'),
                 'EUR',
-                $this->url->link('payment/maksa_ee/confirmation&order_id=' . $this->session->data['order_id']),
-                $this->url->link('payment/maksa_ee/callback')
-                //is_callable($this->url, 'link') ? $this->url->link('checkout/success') : $this->url->https('checkout/success'),
-                //is_callable($this->url, 'link') ? $this->url->link('payment/maksa_ee/callback') : $this->url->https('payment/maksa_ee/callback')
+                $confirmUrl,
+                $callbackUrl
             );
         }
 
@@ -153,6 +159,7 @@ class ControllerPaymentMaksaEE extends Controller
 
     public function confirmation()
     {
+
         $order_id = 0;
         if (isset($this->request->get['order_id'])) {
             $order_id = $this->request->get['order_id'];
@@ -165,9 +172,16 @@ class ControllerPaymentMaksaEE extends Controller
         $this->data['text_payment_failure'] = $this->language->get('text_payment_failure');
         $this->data['text_go_to_order']     = $this->language->get('text_go_to_order');
 
-        $this->data['wait_link']    = $this->url->link('payment/maksa_ee/wait&order_id=' . $order_id);
-        $this->data['order_link']   = $this->url->link('account/order/info&order_id=' . $order_id);
-        $this->data['success_link'] = $this->url->link('checkout/success');
+        if (is_callable(array($this->url, 'link'))) {
+            $this->data['wait_link']    = $this->url->link('payment/maksa_ee/wait&order_id=' . $order_id);
+            $this->data['order_link']   = $this->url->link('account/order/info&order_id=' . $order_id);
+            $this->data['success_link'] = $this->url->link('checkout/success');
+        }
+        else {
+            $this->data['wait_link']    = $this->url->https('payment/maksa_ee/wait') . '&order_id=' . $order_id;
+            $this->data['order_link']   = $this->url->https('account/invoice') . '&order_id=' . $order_id;
+            $this->data['success_link'] = $this->url->https('checkout/success');
+        }
 
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl')) {
             $this->template = $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl';
@@ -176,15 +190,15 @@ class ControllerPaymentMaksaEE extends Controller
             $this->template = 'default/template/payment/maksa_ee_confirmation.tpl';
         }
         $this->children = array(
-            'common/column_left',
-            'common/column_right',
-            'common/content_top',
-            'common/content_bottom',
+//            'common/column_left',
+//            'common/column_right',
+//            'common/content_top',
+//            'common/content_bottom',
             'common/footer',
             'common/header'
         );
 
-        $this->response->setOutput($this->render());
+        $this->response->setOutput($this->render(true));
     }
     
     public function callback()
