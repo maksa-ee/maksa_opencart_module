@@ -79,6 +79,11 @@
                     </tr>
 
                     <tr>
+                        <td><?php echo $entry_total; ?></td>
+                        <td><input type="text" name="maksa_ee_total" value="<?php echo $maksa_ee_total; ?>" /></td>
+                    </tr>
+
+                    <tr>
                         <td><?php echo $entry_completed_status; ?></td>
                         <td>
                             <select name="maksa_ee_completed_status_id">
