@@ -69,6 +69,7 @@ class ControllerPaymentMaksaEE extends Controller
         $this->data['entry_public_key']  = $this->language->get('entry_public_key');
         $this->data['entry_private_key'] = $this->language->get('entry_private_key');
 
+        $this->data['entry_total']            = $this->language->get('entry_total');
         $this->data['entry_completed_status'] = $this->language->get('entry_completed_status');
         $this->data['entry_failed_status']    = $this->language->get('entry_failed_status');
 
@@ -182,6 +183,13 @@ class ControllerPaymentMaksaEE extends Controller
         }
         else {
             $this->data['maksa_ee_private_key'] = $this->config->get('maksa_ee_private_key');
+        }
+
+        if (isset($this->request->post['maksa_ee_total'])) {
+            $this->data['maksa_ee_total'] = $this->request->post['maksa_ee_total'];
+        }
+        else {
+            $this->data['maksa_ee_total'] = $this->config->get('maksa_ee_total');
         }
 
         $this->load->model('localisation/order_status');

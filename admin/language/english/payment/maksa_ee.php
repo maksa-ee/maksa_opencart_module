@@ -13,6 +13,7 @@ $_['entry_test_mode']        = 'Test Mode:';
 $_['entry_client_id']        = 'Client ID:';
 $_['entry_public_key']       = 'Maksa Public Key:';
 $_['entry_private_key']      = 'Your Private Key:';
+$_['entry_total']            = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_completed_status'] = 'Completed Status:';
 $_['entry_failed_status']    = 'Failed Status:';
 $_['entry_geo_zone']         = 'Geo Zone:';
