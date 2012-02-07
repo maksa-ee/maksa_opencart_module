@@ -30,18 +30,28 @@ class ControllerPaymentMaksaEE extends Controller
 {
     protected $ulinkService = null;
 
+    public function link($link, $args = '')
+    {
+        if ($this->url) {
+            if (is_callable(array($this->url, 'link'))) {
+                return $this->url->link($link) . $args;
+            } else {
+                return $this->url->https($link) . $args;
+            }
+        } else {
+            return HTTPS_SERVER . 'index.php?route=' . $link . $args;
+        }
+    }
+
+
     protected function getUlinkService()
     {
         if (null == $this->ulinkService) {
             include_once(DIR_SYSTEM . 'maksa_ee/UlinkService.php');
 
-            if (is_callable(array($this->url, 'link'))) {
-                $callbackUrl = $this->url->link('payment/maksa_ee/callback');
-                $confirmUrl = $this->url->link('payment/maksa_ee/confirmation&order_id=' . $this->session->data['order_id']);
-            } else {
-                $callbackUrl = $this->url->https('payment/maksa_ee/callback');
-                $confirmUrl = $this->url->https('payment/maksa_ee/confirmation') . '&order_id=' . $this->session->data['order_id'];
-            }
+            $callbackUrl = $this->link('payment/maksa_ee/callback');
+            $confirmUrl = $this->link('payment/maksa_ee/confirmation') . '&order_id=' . $this->session->data['order_id'];
+
             $this->ulinkService = new UlinkService(
                 $this->config->get('maksa_ee_client_id'),
                 $this->config->get('maksa_ee_public_key'),
@@ -172,16 +182,9 @@ class ControllerPaymentMaksaEE extends Controller
         $this->data['text_payment_failure'] = $this->language->get('text_payment_failure');
         $this->data['text_go_to_order']     = $this->language->get('text_go_to_order');
 
-        if (is_callable(array($this->url, 'link'))) {
-            $this->data['wait_link']    = $this->url->link('payment/maksa_ee/wait&order_id=' . $order_id);
-            $this->data['order_link']   = $this->url->link('account/order/info&order_id=' . $order_id);
-            $this->data['success_link'] = $this->url->link('checkout/success');
-        }
-        else {
-            $this->data['wait_link']    = $this->url->https('payment/maksa_ee/wait') . '&order_id=' . $order_id;
-            $this->data['order_link']   = $this->url->https('account/invoice') . '&order_id=' . $order_id;
-            $this->data['success_link'] = $this->url->https('checkout/success');
-        }
+        $this->data['wait_link']    = $this->link('payment/maksa_ee/wait') . '&order_id=' . $order_id;
+        $this->data['order_link']   = $this->link('account/invoice') . '&order_id=' . $order_id;
+        $this->data['success_link'] = $this->link('checkout/success');
 
         if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl')) {
             $this->template = $this->config->get('config_template') . '/template/payment/maksa_ee_confirmation.tpl';

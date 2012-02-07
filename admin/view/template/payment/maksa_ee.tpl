@@ -78,10 +78,12 @@
                         </td>
                     </tr>
 
+                    <?php if (isset($show_total) && $show_total) { ?>
                     <tr>
                         <td><?php echo $entry_total; ?></td>
                         <td><input type="text" name="maksa_ee_total" value="<?php echo $maksa_ee_total; ?>" /></td>
                     </tr>
+                    <?php } ?>
 
                     <tr>
                         <td><?php echo $entry_completed_status; ?></td>

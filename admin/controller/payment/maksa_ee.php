@@ -30,6 +30,19 @@ class ControllerPaymentMaksaEE extends Controller
 {
     private $error = array();
 
+    public function link($link, $args = '')
+    {
+        if ($this->url) {
+            if (is_callable(array($this->url, 'link'))) {
+                return $this->url->link($link, 'token=' . $this->session->data['token'], 'SSL') . $args;
+            } else {
+                return $this->url->https($link) . $args;
+            }
+        } else {
+            return HTTPS_SERVER . 'index.php?route=' . $link . '&token=' . $this->session->data['token'] . $args;
+        }
+    }
+
     public function index()
     {
         $this->load->language('payment/maksa_ee');
@@ -50,12 +63,7 @@ class ControllerPaymentMaksaEE extends Controller
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            if (is_callable(array($this->url, 'link'))) {
-                $this->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
-            }
-            else {
-                $this->redirect($this->url->https('extension/payment'));
-            }
+            $this->redirect($this->link('extension/payment'));
         }
 
         $this->data['heading_title'] = $this->language->get('heading_title');
@@ -112,49 +120,26 @@ class ControllerPaymentMaksaEE extends Controller
         # BREADCRUMBS
         $this->data['breadcrumbs'] = array();
 
-        if (is_callable(array($this->url, 'link'))) {
-            $this->data['breadcrumbs'][] = array(
-                'href'       => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-                'text'      => $this->language->get('text_home'),
-                'separator' => false
-            );
-            $this->data['breadcrumbs'][] = array(
-                'href'      => $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'),
-                'text'      => $this->language->get('text_payment'),
-                'separator' => ' :: '
-            );
-            $this->data['breadcrumbs'][] = array(
-                'href'      => $this->url->link('payment/maksa_ee', 'token=' . $this->session->data['token'], 'SSL'),
-                'text'      => $this->language->get('heading_title'),
-                'separator' => ' :: '
-            );
+        $this->document->breadcrumbs[] = array(
+            'href'      => $this->link('common/home'),
+            'text'      => $this->language->get('text_home'),
+            'separator' => false
+        );
 
-            # ACTIONS
-            $this->data['action'] = $this->url->link('payment/maksa_ee', 'token=' . $this->session->data['token'], 'SSL');
-            $this->data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
-        }
-        else {
-            $this->document->breadcrumbs[] = array(
-                'href'      => $this->url->https('common/home'),
-                'text'      => $this->language->get('text_home'),
-                'separator' => false
-            );
+        $this->document->breadcrumbs[] = array(
+            'href'      => $this->link('extension/payment'),
+            'text'      => $this->language->get('text_payment'),
+            'separator' => ' :: '
+        );
 
-            $this->document->breadcrumbs[] = array(
-                'href'      => $this->url->https('extension/payment'),
-                'text'      => $this->language->get('text_payment'),
-                'separator' => ' :: '
-            );
+        $this->document->breadcrumbs[] = array(
+            'href'      => $this->link('payment/maksa_ee'),
+            'text'      => $this->language->get('heading_title'),
+            'separator' => ' :: '
+        );
 
-            $this->document->breadcrumbs[] = array(
-                'href'      => $this->url->https('payment/maksa_ee'),
-                'text'      => $this->language->get('heading_title'),
-                'separator' => ' :: '
-            );
-
-            $this->data['action'] = $this->url->https('payment/maksa_ee');
-            $this->data['cancel'] = $this->url->https('extension/payment');
-        }
+        $this->data['action'] = $this->link('payment/maksa_ee');
+        $this->data['cancel'] = $this->link('extension/payment');
 
         # VALUES
         if (isset($this->request->post['maksa_ee_test_mode'])) {
@@ -231,11 +216,14 @@ class ControllerPaymentMaksaEE extends Controller
             $this->data['maksa_ee_sort_order'] = $this->config->get('maksa_ee_sort_order');
         }
 
-        // if version is 1.5
-        if (is_callable(array($this->url, 'link'))) {
-            $this->template = 'payment/maksa_ee.tpl';
-        } else {
 
+        // if version is 1.5
+        if (!$this->url || is_callable(array($this->url, 'link'))) {
+            $this->template = 'payment/maksa_ee.tpl';
+            if (is_callable(array($this->url, 'link'))) { // if 1.5
+                $this->data['show_total'] = true;
+            }
+        } else {
             $this->data['tab_general'] = $this->language->get('tab_general');
             $this->template = 'payment/maksa_ee_1_3.tpl';
         }
