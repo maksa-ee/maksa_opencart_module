@@ -34,7 +34,7 @@ class ControllerPaymentMaksaEE extends Controller
     {
         $this->load->language('payment/maksa_ee');
 
-        if (is_callable($this->document, 'setTitle')) {
+        if (is_callable(array($this->document, 'setTitle'))) {
             $this->document->setTitle($this->language->get('heading_title'));
         }
         else {
@@ -50,7 +50,7 @@ class ControllerPaymentMaksaEE extends Controller
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            if (is_callable($this->url, 'link')) {
+            if (is_callable(array($this->url, 'link'))) {
                 $this->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
             }
             else {
@@ -112,7 +112,7 @@ class ControllerPaymentMaksaEE extends Controller
         # BREADCRUMBS
         $this->data['breadcrumbs'] = array();
 
-        if (is_callable($this->url, 'link')) {
+        if (is_callable(array($this->url, 'link'))) {
             $this->data['breadcrumbs'][] = array(
                 'href'       => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
                 'text'      => $this->language->get('text_home'),
@@ -232,7 +232,7 @@ class ControllerPaymentMaksaEE extends Controller
         }
 
         // if version is 1.5
-        if (is_callable($this->url, 'link')) {
+        if (is_callable(array($this->url, 'link'))) {
             $this->template = 'payment/maksa_ee.tpl';
         } else {
 
