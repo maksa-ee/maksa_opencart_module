@@ -183,14 +183,14 @@ class ControllerPaymentMaksaEE extends Controller
             $this->data['maksa_ee_completed_status_id'] = $this->request->post['maksa_ee_completed_status_id'];
         }
         else {
-            $this->data['maksa_ee_completed_status_id'] = $this->config->get('maksa_ee_completed_status_id') ?: 5;
+            $this->data['maksa_ee_completed_status_id'] = $this->config->get('maksa_ee_completed_status_id') ? $this->config->get('maksa_ee_completed_status_id') : 5;
         }
 
         if (isset($this->request->post['maksa_ee_failed_status_id'])) {
             $this->data['maksa_ee_failed_status_id'] = $this->request->post['maksa_ee_failed_status_id'];
         }
         else {
-            $this->data['maksa_ee_failed_status_id'] = $this->config->get('maksa_ee_failed_status_id') ?: 10;
+            $this->data['maksa_ee_failed_status_id'] = $this->config->get('maksa_ee_failed_status_id') ? $this->config->get('maksa_ee_failed_status_id') : 10;
         }
 
         if (isset($this->request->post['maksa_ee_geo_zone_id'])) {
