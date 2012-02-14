@@ -92,7 +92,7 @@
               <td><select name="maksa_ee_geo_zone_id">
                   <option value="0"><?php echo $text_all_zones; ?></option>
                   <?php foreach ($geo_zones as $geo_zone) { ?>
-                  <?php if ($geo_zone['geo_zone_id'] == $onpay_geo_zone_id) { ?>
+                  <?php if ($geo_zone['geo_zone_id'] == $maksa_ee_geo_zone_id) { ?>
                       <option value="<?php echo $geo_zone['geo_zone_id']; ?>" selected="selected">
                           <?php echo $geo_zone['name']; ?>
                       </option>
